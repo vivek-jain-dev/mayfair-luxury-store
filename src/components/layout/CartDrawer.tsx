@@ -1,20 +1,64 @@
 "use client";
 
 import { useCartStore } from "@/store/useCartStore";
-import { X, Trash2, ShoppingBag } from "lucide-react";
+import { X, Trash2, ShoppingBag, Loader2, AlertCircle } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
-import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export function CartDrawer() {
   const { isOpen, closeCart, items, removeItem, updateQuantity, getTotalPrice } = useCartStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Close on Escape key press
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        closeCart();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, closeCart]);
 
   if (!isOpen) return null;
 
   const totalPrice = getTotalPrice();
 
+  const handleCheckout = async () => {
+    if (items.length === 0) return;
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ items }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.error) {
+        throw new Error(data.error || "Failed to initiate checkout session.");
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("Invalid checkout response.");
+      }
+    } catch (err: any) {
+      setError(err?.message || "An error occurred during checkout. Please try again.");
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
+    <div className="fixed inset-0 z-50 overflow-hidden" role="dialog" aria-modal="true" aria-label="Shopping Bag">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
@@ -33,7 +77,8 @@ export function CartDrawer() {
             </div>
             <button
               onClick={closeCart}
-              className="p-2 text-gray-500 hover:text-black focus:outline-none"
+              className="p-2 text-gray-500 hover:text-black focus:outline-none transition-colors"
+              aria-label="Close Shopping Bag"
             >
               <X size={20} />
             </button>
@@ -41,6 +86,13 @@ export function CartDrawer() {
 
           {/* Cart Items List */}
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs flex items-center space-x-2">
+                <AlertCircle size={16} className="flex-shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
             {items.length === 0 ? (
               <div className="text-center py-20 space-y-4">
                 <p className="text-gray-500 text-sm font-sans">Your shopping bag is currently empty.</p>
@@ -76,14 +128,16 @@ export function CartDrawer() {
                       <div className="flex items-center border border-gray-300 text-xs">
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="px-2 py-1 text-gray-600 hover:bg-gray-100"
+                          className="px-2 py-1 text-gray-600 hover:bg-gray-100 transition-colors"
+                          aria-label="Decrease quantity"
                         >
                           -
                         </button>
                         <span className="px-3 py-1 font-medium">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="px-2 py-1 text-gray-600 hover:bg-gray-100"
+                          className="px-2 py-1 text-gray-600 hover:bg-gray-100 transition-colors"
+                          aria-label="Increase quantity"
                         >
                           +
                         </button>
@@ -94,7 +148,8 @@ export function CartDrawer() {
                         </span>
                         <button
                           onClick={() => removeItem(item.id)}
-                          className="text-gray-400 hover:text-red-600 transition-colors"
+                          className="text-gray-400 hover:text-red-600 transition-colors p-1"
+                          aria-label="Remove item"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -117,12 +172,18 @@ export function CartDrawer() {
                 Taxes and complimentary worldwide shipping calculated at checkout.
               </p>
               <button
-                onClick={() => {
-                  alert("Proceeding to Checkout process!");
-                }}
-                className="w-full bg-[#484D40] text-[#FCFCFC] py-4 text-xs uppercase tracking-widest font-semibold hover:bg-[#3B3F34] transition-colors"
+                onClick={handleCheckout}
+                disabled={isLoading}
+                className="w-full bg-[#484D40] text-[#FCFCFC] py-4 text-xs uppercase tracking-widest font-semibold hover:bg-[#3B3F34] transition-colors flex items-center justify-center space-x-2 disabled:opacity-75 disabled:cursor-not-allowed"
               >
-                Proceed to Checkout
+                {isLoading ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    <span>Preparing Checkout...</span>
+                  </>
+                ) : (
+                  <span>Proceed to Checkout • {formatPrice(totalPrice)}</span>
+                )}
               </button>
             </div>
           )}
@@ -131,3 +192,4 @@ export function CartDrawer() {
     </div>
   );
 }
+
