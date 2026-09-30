@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Search, ChevronDown, Menu, X, ArrowRight } from "lucide-react";
+import { ChevronDown, Menu, X, ArrowRight } from "lucide-react";
 import { NAV_LINKS_LEFT, NAV_LINKS_RIGHT, LOGO_TEXT } from "@/lib/constants";
 import { useCartStore } from "@/store/useCartStore";
 
@@ -29,16 +29,11 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#FCFCFC]/95 backdrop-blur-md border-b border-[#E8E8E8] text-[#313131]">
-      {/* Announcement Bar */}
-      <div className="bg-[#484D40] text-[#FCFCFC] text-[11px] py-2 text-center tracking-[0.2em] uppercase font-medium">
-        COMPLIMENTARY SHIPPING &amp; FITTING CONSULTATIONS WORLDWIDE
-      </div>
-
-      {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between relative">
-        {/* Left Navigation (Desktop) */}
-        <nav className="hidden lg:flex items-center space-x-7 text-[12px] uppercase tracking-[0.18em] font-medium text-[#313131]">
+    <header className="sticky top-0 z-40 bg-[#FCFCFC] border-b border-[#E8E8E8] text-[#313131]">
+      {/* Top Main Navbar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        {/* Left Navigation Items */}
+        <nav className="hidden lg:flex items-center space-x-8 text-[11px] uppercase tracking-[0.2em] font-medium text-[#313131]">
           {NAV_LINKS_LEFT.map((link) =>
             link.hasDropdown ? (
               <div
@@ -49,15 +44,15 @@ export function Header() {
               >
                 <Link
                   href={link.href}
-                  className="hover:text-[#7C856E] transition-colors flex items-center gap-1.5 py-1"
+                  className="hover:text-gray-600 transition-colors flex items-center gap-1 py-1"
                 >
                   {link.label}
-                  <ChevronDown size={14} className="text-[#313131]" />
+                  <ChevronDown size={13} className="text-[#313131]" />
                 </Link>
 
                 {/* Dropdown Menu */}
                 {shopDropdownOpen && (
-                  <div className="absolute left-0 top-full w-56 bg-white border border-[#E8E8E8] shadow-xl py-3 z-50 text-[11px] tracking-[0.15em] font-medium uppercase space-y-1">
+                  <div className="absolute left-0 top-full w-56 bg-white border border-[#E8E8E8] shadow-lg py-3 z-50 text-[11px] tracking-[0.15em] font-medium uppercase space-y-1">
                     <Link
                       href="/shop"
                       className="block px-4 py-2 hover:bg-[#F7F7F7] hover:text-[#7C856E] transition-colors"
@@ -89,7 +84,7 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="hover:text-[#7C856E] transition-colors py-2 border-b border-transparent hover:border-[#7C856E]"
+                className="hover:text-gray-600 transition-colors py-2"
               >
                 {link.label}
               </Link>
@@ -97,34 +92,30 @@ export function Header() {
           )}
         </nav>
 
-        {/* Center Brand Logo */}
-        <Link href="/" className="text-center group flex flex-col items-center">
-          <span className="font-serif text-3xl sm:text-4xl tracking-[0.22em] text-[#313131] group-hover:opacity-85 transition-opacity font-normal uppercase">
+        {/* Center Logo - Crisp Serif MAYFAIR */}
+        <Link href="/" className="text-center group">
+          <span className="font-serif text-3xl sm:text-4xl tracking-[0.32em] text-[#1A1A1A] font-normal uppercase transition-opacity hover:opacity-80">
             {LOGO_TEXT}
-          </span>
-          <span className="block text-[9px] tracking-[0.3em] text-[#7C856E] uppercase font-sans mt-0.5 font-medium">
-            HOUSTON • MAYFAIR
           </span>
         </Link>
 
-        {/* Right Navigation & Utility Actions */}
-        <div className="flex items-center space-x-6 text-[12px] uppercase tracking-[0.18em] font-medium text-[#313131]">
-          <nav className="hidden lg:flex items-center space-x-7">
+        {/* Right Navigation & Circular Cart Counter */}
+        <div className="flex items-center space-x-8 text-[11px] uppercase tracking-[0.2em] font-medium text-[#313131]">
+          <nav className="hidden lg:flex items-center space-x-8">
             {NAV_LINKS_RIGHT.map((link) =>
               link.isSearch ? (
                 <button
                   key="search"
                   onClick={() => setSearchOpen(!searchOpen)}
-                  className="hover:text-[#7C856E] transition-colors py-2 uppercase focus:outline-none flex items-center gap-1.5"
+                  className="hover:text-gray-600 transition-colors py-2 uppercase focus:outline-none"
                 >
-                  <Search size={14} className="text-[#313131]" />
-                  <span>SEARCH</span>
+                  SEARCH
                 </button>
               ) : (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="hover:text-[#7C856E] transition-colors py-2 border-b border-transparent hover:border-[#7C856E]"
+                  className="hover:text-gray-600 transition-colors py-2"
                 >
                   {link.label}
                 </Link>
@@ -132,22 +123,19 @@ export function Header() {
             )}
           </nav>
 
-          {/* Cart Icon / Counter */}
+          {/* Thin Circle Cart Badge Icon - Matching Screenshot */}
           <button
             onClick={toggleCart}
-            className="hover:text-[#7C856E] transition-colors py-2 font-medium tracking-[0.15em] focus:outline-none text-[12px] flex items-center gap-1"
-            aria-label="Shopping Cart"
+            aria-label="Shopping Bag"
+            className="w-8 h-8 rounded-full border border-[#767676] hover:border-[#313131] transition-colors flex items-center justify-center text-[12px] font-light text-[#313131] focus:outline-none"
           >
-            <span>CART</span>
-            <span className="text-[11px] font-normal text-[#313131] ml-0.5">
-              ({totalItems})
-            </span>
+            {totalItems}
           </button>
 
-          {/* Mobile Hamburger Toggle */}
+          {/* Mobile Hamburger Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 text-[#313131] hover:text-[#7C856E] focus:outline-none"
+            className="lg:hidden p-1 text-[#313131] hover:text-gray-600 focus:outline-none"
             aria-label="Toggle Menu"
           >
             {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -155,9 +143,9 @@ export function Header() {
         </div>
       </div>
 
-      {/* Slide-Down Quick Search Overlay */}
+      {/* Quick Search Drawer */}
       {searchOpen && (
-        <div className="bg-[#FFFFFF] border-b border-[#E8E8E8] px-4 py-4 transition-all duration-300">
+        <div className="bg-[#FFFFFF] border-b border-[#E8E8E8] px-4 py-4">
           <form
             onSubmit={handleSearchSubmit}
             className="max-w-3xl mx-auto flex items-center border-b border-[#313131] pb-2"
@@ -172,7 +160,7 @@ export function Header() {
             />
             <button
               type="submit"
-              className="p-2 text-[#313131] hover:text-[#7C856E] transition-colors"
+              className="p-2 text-[#313131] hover:text-gray-600 transition-colors"
               aria-label="Submit Search"
             >
               <ArrowRight size={18} />
@@ -180,7 +168,7 @@ export function Header() {
             <button
               type="button"
               onClick={() => setSearchOpen(false)}
-              className="p-2 text-[#313131] hover:text-[#7C856E] transition-colors ml-2"
+              className="p-2 text-[#313131] hover:text-gray-600 transition-colors ml-2"
               aria-label="Close Search"
             >
               <X size={18} />
@@ -189,62 +177,62 @@ export function Header() {
         </div>
       )}
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-[#FCFCFC] border-b border-[#E5E5E5] px-6 py-6 space-y-4 text-xs uppercase tracking-[0.2em] font-medium text-[#313131]">
           <Link
             href="/bespoke"
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 border-b border-gray-100 hover:text-[#7C856E]"
+            className="block py-2 border-b border-gray-100 hover:text-gray-600"
           >
             APPOINTMENTS
           </Link>
           <Link
             href="/lookbook"
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 border-b border-gray-100 hover:text-[#7C856E]"
+            className="block py-2 border-b border-gray-100 hover:text-gray-600"
           >
             LOOKBOOKS
           </Link>
           <Link
             href="/trunkshows"
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 border-b border-gray-100 hover:text-[#7C856E]"
+            className="block py-2 border-b border-gray-100 hover:text-gray-600"
           >
             TRUNKSHOWS
           </Link>
           <Link
             href="/shop"
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 border-b border-gray-100 hover:text-[#7C856E]"
+            className="block py-2 border-b border-gray-100 hover:text-gray-600"
           >
             SHOP READY-TO-WEAR
           </Link>
           <Link
             href="/story"
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 border-b border-gray-100 hover:text-[#7C856E]"
+            className="block py-2 border-b border-gray-100 hover:text-gray-600"
           >
             ABOUT MAYFAIR
           </Link>
           <Link
             href="/account"
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 border-b border-gray-100 hover:text-[#7C856E]"
+            className="block py-2 border-b border-gray-100 hover:text-gray-600"
           >
             CLIENT LOGIN / ACCOUNT
           </Link>
           <Link
             href="/press"
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 border-b border-gray-100 hover:text-[#7C856E]"
+            className="block py-2 border-b border-gray-100 hover:text-gray-600"
           >
             PRESS &amp; MEDIA
           </Link>
           <Link
             href="/return-policy"
             onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 hover:text-[#7C856E]"
+            className="block py-2 hover:text-gray-600"
           >
             SHIPPING &amp; RETURN POLICY
           </Link>
