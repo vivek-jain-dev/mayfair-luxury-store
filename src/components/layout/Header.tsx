@@ -1,15 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ShoppingBag, Menu, X, Search } from "lucide-react";
 import { NAV_LINKS, BRAND_NAME } from "@/lib/constants";
 import { useCartStore } from "@/store/useCartStore";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { toggleCart, getTotalItems } = useCartStore();
-  const totalItems = getTotalItems();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const totalItems = mounted ? getTotalItems() : 0;
 
   return (
     <header className="sticky top-0 z-40 bg-[#FCFCFC]/95 backdrop-blur-md border-b border-[#E5E5E5] text-[#313131]">
@@ -72,7 +78,7 @@ export function Header() {
             aria-label="Open Shopping Bag"
           >
             <ShoppingBag size={22} />
-            {totalItems > 0 && (
+            {mounted && totalItems > 0 && (
               <span className="absolute top-0 right-0 bg-[#484D40] text-[#FCFCFC] text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                 {totalItems}
               </span>
